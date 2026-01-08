@@ -111,7 +111,7 @@ class RankingAgent:
                     paper["ai_reason"] = rank_item.get("reason")
                     ordered_papers.append(paper)
 
-            # 如果 LLM 漏掉了某些文章，把剩下的补在后面
+            # 如果LLM漏掉了某些文章，为保证核心论文完整，需要将遗漏的paper_id补在ordered_papers后面
             processed_ids = set(p["paperId"] for p in ordered_papers if p.get("paperId"))
             for p in papers_data:
                 pid = p.get("paperId")
@@ -122,6 +122,6 @@ class RankingAgent:
 
         except Exception as e:
             logger.error(f"Error during LLM ranking: {e}")
-            # 降级：直接返回按引用数排序的结果
+            # 应急措施，直接返回按引用数排序的结果
             papers_data.sort(key=lambda x: x.get("citationCount", 0), reverse=True)
             return papers_data
